@@ -1,5 +1,7 @@
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
 import { User } from "../modals/userModal.js";
-import jwt from "jsonwebtoken"
 
 export const signUp = async (req, res) => {
     try {
@@ -24,8 +26,11 @@ export const signUp = async (req, res) => {
 
         let token = jwt.sign({ email }, process.env.JWT_SECRET);
 
+        const salt = await bcrypt.genSaltSync(8);
+        let hashPassword = await bcrypt.hash(password, salt);
+
         const createUser = await User.create({
-            name, email, password,
+            name, email, password: hashPassword,
             createdAt: new Date(Date.now()),
         });
         return res.status(201).json({
@@ -50,13 +55,18 @@ export const login = async (req, res) => {
             password
         } = req.body;
 
-        const findUser = await User.findOne({ email, password });
+        const findUser = await User.findOne({ email });
+        console.log("user Details fetched", findUser);
         if (!findUser) {
             return res.status(404).json({
                 success: false,
                 message: "No user found"
             })
         };
+        let verifyPassword = await bcrypt.compare(password, findUser.password);
+        if (!verifyPassword) {
+            return res.status(400).json({ status: false, message: "Invalid Password" })
+        }
         let token = jwt.sign({ email }, process.env.JWT_SECRET);
 
         return res.status(200).json({
