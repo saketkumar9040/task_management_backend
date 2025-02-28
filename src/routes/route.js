@@ -4,6 +4,13 @@ import { createTask, deleteTaskById, getAllTask, getTaskById, updateTaskById } f
 
 const router = express.Router();
 
+router.get("/",(req,res)=>{
+    res.status(200).json({
+        success:true,
+        message:"Welcome to task management backend"
+    })
+})
+
 //   USER  API'S  ==============================================================================>
 router.post("/auth/signup", signUp);
 router.post("/auth/login", login);
