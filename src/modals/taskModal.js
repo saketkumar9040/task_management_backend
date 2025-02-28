@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-     title:String,
-     description:String,
-     createdAt:Date,
-     updatedAt:Date,
+const taskSchema = new mongoose.Schema({
+     title: String,
+     description: String,
+     userId: mongoose.Schema.Types.ObjectId,
+     createdAt: Date,
+     updatedAt: Date,
 });
 
-export const User = mongoose.model("users",userSchema);
+export const Task = mongoose.model("tasks", taskSchema);
